@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Security Awareness – Adaptive Quiz Prototype</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <h1 class="logo">SecAware AI</h1>
+      <nav>
+        <button class="nav-btn active">Adaptive Quiz</button>
+        <!-- later you can add:
+        <button class="nav-btn">Phishing Simulator</button>
+        <button class="nav-btn">Training Generator</button>
+        -->
+      </nav>
+      <div class="sidebar-footer">
+        <p class="note">
+          Prototype powered by Gemini<br />
+          (questions & explanations generated with AI).
+        </p>
+      </div>
+    </aside>
+
+    <main class="main-panel">
+      <section id="intro-screen">
+        <h2>Adaptive Security Awareness Quiz</h2>
+        <p>
+          This prototype adjusts question difficulty in real time based on
+          how you answer, similar to adaptive training platforms like Hoxhunt.
+        </p>
+        <ul>
+          <li>Topics: phishing, social engineering, MFA, passwords.</li>
+          <li>Starts easy, moves toward harder spear-phishing scenarios.</li>
+          <li>Gives instant feedback and micro-tips after each question.</li>
+        </ul>
+        <button id="start-btn" class="primary-btn">Start Quiz</button>
+      </section>
+
+      <section id="quiz-screen" class="hidden">
+        <div class="quiz-header">
+          <div>
+            <h2>Question <span id="question-number">1</span> / 10</h2>
+            <p class="difficulty-pill">
+              Difficulty: <span id="difficulty-label">Easy</span>
+            </p>
+          </div>
+          <div class="score-box">
+            <span>Correct: <strong id="correct-count">0</strong></span>
+            <span>Incorrect: <strong id="incorrect-count">0</strong></span>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <p id="question-text"></p>
+          <div id="answer-buttons" class="answers"></div>
+        </div>
+
+        <div id="feedback-panel" class="feedback hidden">
+          <p id="feedback-result"></p>
+          <p id="feedback-explanation"></p>
+          <p id="feedback-tip" class="tip"></p>
+          <button id="next-btn" class="secondary-btn">Next Question</button>
+        </div>
+      </section>
+
+      <section id="summary-screen" class="hidden">
+        <h2>Your Training Summary</h2>
+        <p id="final-level"></p>
+
+        <div class="summary-grid">
+          <div>
+            <h3>Strengths</h3>
+            <ul id="strengths-list"></ul>
+          </div>
+          <div>
+            <h3>Risks / Weaknesses</h3>
+            <ul id="weaknesses-list"></ul>
+          </div>
+        </div>
+
+        <h3>Recommended Next Steps</h3>
+        <ul id="next-steps-list"></ul>
+
+        <button id="restart-btn" class="primary-btn">Restart Quiz</button>
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
