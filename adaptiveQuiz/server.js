@@ -15,6 +15,9 @@ app.use(express.json());
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 // Match what you saw in AI Studio:
 const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+//gemini-2.5-flash kept giving 503 errrors
+//gemini-2.5-flash-lite as replacement
+
 
 // Retry wrapper for Gemini
 async function callGeminiWithRetry(prompt, retries = 3, delayMs = 1000) {
@@ -196,9 +199,9 @@ STRICT DIVERSITY RULE:
 Do NOT repeat similar "verify link" or "contact IT" answers across questions.
 Avoid repeating the same scenario structure (like clicking links).
 
-Each question must feel different from previous patterns:
-- INCLUDE login prompts, MFA fatigue, password reuse, shoulder surfing,
-  suspicious phone calls, tailgating, USB drive etiquette, etc.
+Each question must feel DIFFERENT from previous patterns:
+- INCLUDE login prompts AND MFA fatigue AND password reuse AND shoulder surfing
+  AND suspicious phone calls AND tailgating, USB drive etiquette, etc.
 
 Return JSON ONLY:
 
