@@ -603,18 +603,70 @@ nextEmailBtn.addEventListener("click", () => {
 
 
 //POLICY → TRAINING & CONTENT 
-const topicSelect = document.getElementById("training-topic");
-const microTrainingBtn = document.getElementById("micro-training-btn");
 const microTrainingOutput = document.getElementById("micro-training-output");
+const mtPrev = document.getElementById("mt-prev");
+const mtNext = document.getElementById("mt-next");
+const mtStart = document.getElementById("mt-start");
+const mtTopicTitle = document.getElementById("mt-topic-title");
+const mtTopicSubtitle = document.getElementById("mt-topic-subtitle");
 
-if (microTrainingBtn && topicSelect && microTrainingOutput) {
-  microTrainingBtn.addEventListener("click", async () => {
-    const topic = topicSelect.value.trim();
-    if (!topic) {
-      alert("Please choose a training topic first.");
-      return;
-    }
+// The topics we rotate through
+const mtTopics = [
+  {
+    key: "phishing_basics",
+    title: "Phishing – Email & Web Pages",
+    subtitle: "How phishing emails and fake sites try to trick you.",
+  },
+  {
+    key: "strong_passwords",
+    title: "Strong Passwords",
+    subtitle: "Creating and managing strong, unique passwords.",
+  },
+  {
+    key: "ai_privacy",
+    title: "AI & Data Privacy",
+    subtitle: "What not to paste into AI tools at work.",
+  },
+  {
+    key: "public_wifi",
+    title: "Public Wi-Fi Safety",
+    subtitle: "How to stay safe on open networks.",
+  },
+];
 
+let mtIndex = 0;
+
+function renderMicroTopic() {
+  const topic = mtTopics[mtIndex];
+  mtTopicTitle.textContent = topic.title;
+  mtTopicSubtitle.textContent = topic.subtitle;
+
+  // Clear previous lesson when you switch topics
+  if (microTrainingOutput) {
+    microTrainingOutput.innerHTML = "";
+  }
+}
+
+// initial render in case the section is opened directly
+if (mtTopicTitle && mtTopicSubtitle) {
+  renderMicroTopic();
+}
+
+if (mtPrev && mtNext) {
+  mtPrev.addEventListener("click", () => {
+    mtIndex = (mtIndex - 1 + mtTopics.length) % mtTopics.length;
+    renderMicroTopic();
+  });
+
+  mtNext.addEventListener("click", () => {
+    mtIndex = (mtIndex + 1) % mtTopics.length;
+    renderMicroTopic();
+  });
+}
+
+if (mtStart && microTrainingOutput) {
+  mtStart.addEventListener("click", async () => {
+    const topic = mtTopics[mtIndex].key;
     microTrainingOutput.innerHTML = "Generating micro-training module...";
 
     try {

@@ -205,37 +205,38 @@
           <div class="card">
             <h1>Micro-Training Library</h1>
             <p>
-              Choose a security topic and Gemini will generate a short, focused
-              micro-training module that an employee could read in a short amount 
-              of time.
+              Pick a short module (about 30–60 seconds) on a specific security topic.
             </p>
-        
-            <label for="training-topic">Training topic</label>
-            <select id="training-topic">
-              <option value="phishing_basics">
-                How to identify a phishing email
-              </option>
-              <option value="strong_passwords">
-                Creating and managing strong passwords
-              </option>
-              <option value="ai_privacy">
-                Data privacy when using AI assistants
-              </option>
-              <option value="public_wifi">
-                Safe use of public Wi-Fi networks
-              </option>
-            </select>
-        
-            <button id="micro-training-btn" class="primary-btn" style="margin-left: 12px;">
-              Generate Micro-Training Module
-            </button>
-        
+
+            <!-- Nimblr-style single card with arrows -->
+            <div class="module-carousel">
+              <button class="module-arrow" id="mt-prev" aria-label="Previous module">
+                ‹
+              </button>
+
+              <div class="module-card-large">
+                <div class="mt-provider">SecAware Assistant – Micro-Training</div>
+                <h2 id="mt-topic-title">Phishing – Email & Web Pages</h2>
+                <p id="mt-topic-subtitle">
+                  How phishing emails and fake sites try to trick you.
+                </p>
+                <p class="mt-duration">Approx. 30–60 seconds</p>
+
+                <button id="mt-start" class="primary-btn">
+                  Start Module
+                </button>
+              </div>
+
+              <button class="module-arrow" id="mt-next" aria-label="Next module">
+                ›
+              </button>
+            </div>
+
+            <!-- AI-generated lesson appears here -->
             <div id="micro-training-output" class="mt-output"></div>
           </div>
         </section>
-        
-      </main>
-    </div>
+
 
     <script src="/script.js"></script>
   </body>
