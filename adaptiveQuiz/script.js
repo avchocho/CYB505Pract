@@ -684,12 +684,23 @@ if (mtStart && microTrainingOutput) {
       // Lesson card
       const scriptDiv = document.createElement("div");
       scriptDiv.className = "mt-section";
+
+      // use paragraphs array if present, otherwise fall back to script string
+      const paras = Array.isArray(data.paragraphs) && data.paragraphs.length
+        ? data.paragraphs
+        : [(data.script || "").trim()];
+
+      const parasHTML = paras
+        .map((p) => `<p class="mt-script">${p}</p>`)
+        .join("");
+
       scriptDiv.innerHTML = `
         <h3>${data.title || "Lesson"}</h3>
         <p class="mt-overview">${data.overview || ""}</p>
-        <p class="mt-script">${(data.script || "").replace(/\n\n/g, "<br><br>")}</p>
+        ${parasHTML}
       `;
       microTrainingOutput.appendChild(scriptDiv);
+
 
       // Key takeaways
       if (Array.isArray(data.takeaways) && data.takeaways.length > 0) {

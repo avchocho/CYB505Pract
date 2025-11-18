@@ -16,9 +16,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 // Match what you saw in AI Studio:
 const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
 
-// ------------------------------
-// Helper: retry wrapper for Gemini
-// ------------------------------
+// Retry wrapper for Gemini
 async function callGeminiWithRetry(prompt, retries = 3, delayMs = 1000) {
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
@@ -368,8 +366,12 @@ Return JSON ONLY with this structure:
 
 {
   "title": "short catchy title for the module",
-  "overview": "1-2 sentence overview (max 35 words)",
-  "script": "Micro-lesson, 4–6 short sentences, max 150 words total.",
+  "overview": "2–3 sentence overview (max 60 words, single paragraph)",
+  "paragraphs": [
+    "Paragraph 1: 3–5 short sentences.",
+    "Paragraph 2: 3–5 short sentences.",
+    "Optional paragraph 3: 3–5 short sentences."
+  ],
   "takeaways": [
     "1-line key takeaway",
     "another 1-line key takeaway",
@@ -377,12 +379,15 @@ Return JSON ONLY with this structure:
   ]
 }
 
-Guidelines:
+STRICT RULES:
+- Each paragraph MUST be a separate string in the "paragraphs" array.
+- Do NOT put newline characters (\\n) inside any string.
 - Keep language simple, concrete, and workplace-focused.
-- Make the script easy to read out loud in under 60 seconds.
+- Total length across all paragraphs about 180–220 words.
 - Avoid real company names; use generic ones like "ACME Corp".
-- Keep everything as short as possible. Respond with JSON only, no extra commentary.
+- Respond with JSON only, no extra commentary.
 `;
+
 
     const result = await callGeminiWithRetry(prompt);
     const text = result.response.text();
@@ -404,7 +409,7 @@ Guidelines:
   }
 });
 
-//START SERVER 
+// START SERVER
 app.listen(port, () => {
   console.log(`Gemini backend listening on http://localhost:${port}`);
 });

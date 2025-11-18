@@ -272,6 +272,7 @@ ul {
   margin-top: 4px;
 }
 
+/* default mt-section (will be overridden below for micro-training card layout) */
 .mt-section {
   margin-top: 12px;
 }
@@ -291,6 +292,47 @@ textarea {
   display: flex;
   gap: 8px;
   margin-top: 12px;
+}
+
+/* ---------- MICRO-TRAINING CONTENT LAYOUT ---------- */
+
+.mt-output {
+  margin-top: 20px;
+}
+
+.mt-section {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  padding: 20px 24px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  max-width: 70ch;          /* keeps line length readable */
+  margin-top: 16px;
+}
+
+.mt-section h3 {
+  margin-bottom: 10px;
+}
+
+.mt-overview {
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.mt-script {
+  line-height: 1.6;
+  margin-bottom: 16px;
+  white-space: normal;
+}
+
+.mt-section ul {
+  margin-left: 20px;
+  margin-top: 4px;
+  margin-bottom: 0;
+}
+
+.mt-section li {
+  margin-bottom: 4px;
 }
 
 /* MICRO-TRAINING CAROUSEL */
