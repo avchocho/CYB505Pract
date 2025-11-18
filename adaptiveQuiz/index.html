@@ -2,19 +2,27 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>SecAware AI – Security Awareness Assistant</title>
+    <title>SecAware Assistant – Security Awareness Training</title>
     <link rel="stylesheet" href="/style.css" />
   </head>
   <body>
     <div class="app-shell">
       <aside class="sidebar">
-        <div class="logo">SecAware AI</div>
+        <div class="logo">SecAware Assistant</div>
         <nav class="nav">
-            <button class="nav-btn" data-mode="mode-a">Risk Profile</button>
-            <button class="nav-btn" data-mode="mode-b">Adaptive Quiz</button>
-            <button class="nav-btn" data-mode="mode-c">Phishing Lab</button>
-            <button class="nav-btn" data-mode="mode-d">Policy → Training</button>
-          </nav>
+          <!-- 1. Risk Profile -->
+          <button class="nav-btn" data-mode="mode-a">Risk Profile</button>
+        
+          <!-- 2. Micro-Training -->
+          <button class="nav-btn" data-mode="mode-d">Micro-Training</button>
+        
+          <!-- 3. Phishing Lab -->
+          <button class="nav-btn" data-mode="mode-c">Phishing Lab</button>
+        
+          <!-- 4. Adaptive Quiz -->
+          <button class="nav-btn" data-mode="mode-b">Quiz</button>
+        </nav>
+        
           
         <div class="sidebar-footer">
           Powered by Gemini
@@ -23,15 +31,15 @@
 
       <main class="main">
         <section id="welcome-screen" class="card">
-            <h1>Welcome to SecAware AI</h1>
+            <h1>Welcome to your Security Awareness Training Assistant</h1>
           
             <p>This tool provides AI-powered security training using Google Gemini. It includes:</p>
             
             <ul>
-              <li><strong>Risk Profile</strong> — Estimate user awareness level</li>
-              <li><strong>Adaptive Quiz</strong> — Difficulty changes based on answers</li>
-              <li><strong>Phishing Lab</strong> — Generate & analyze phishing scenarios</li>
-              <li><strong>Policy → Training</strong> — Convert security policies into micro-training</li>
+              <li><strong>Risk Profile</strong> — Estimate your baseline security awareness level</li>
+              <li><strong>Micro-Training</strong> — Short modules on different security topics</li>
+              <li><strong>Phishing Lab</strong> — Generate & analyze simulated phishing scenarios</li>
+              <li><strong>Quiz</strong> — Difficulty changes based on how you answer</li>
             </ul>
           
             <button id="start-risk" class="primary-btn">Start With Risk Profile</button>
@@ -63,7 +71,7 @@
                   </div>
                 </div>
               </header>
-  
+
               <p id="risk-question-text" class="question-text"></p>
               <div id="risk-answer-buttons" class="answers"></div>
   
@@ -170,7 +178,7 @@
 
             <!-- Start a 5-email simulation -->
             <button id="generate-emails-btn" class="primary-btn">
-              Start 5-Email Simulation
+              Start Email Simulation
             </button>
 
             <!-- Shows ONE email at a time -->
@@ -195,33 +203,37 @@
         <!--  POLICY → TRAINING & CONTENT -->
         <section id="mode-d" class="mode-section hidden">
           <div class="card">
-            <h1>Micro-Training from Policy</h1>
+            <h1>Micro-Training Library</h1>
             <p>
-              Paste a short email/security policy and Gemini will generate a
-              60-second micro-training script plus quiz questions and content
-              assets.
+              Choose a security topic and Gemini will generate a short, focused
+              micro-training module that an employee could read in a short amount 
+              of time.
             </p>
-
-            <label for="policy-text">Policy Text</label>
-            <textarea
-              id="policy-text"
-              rows="6"
-              placeholder="Example: Employees must never click on links in unexpected emails. Instead, navigate directly to the company website..."
-            ></textarea>
-
-            <div class="button-row">
-              <button id="micro-training-btn" class="primary-btn">
-                Generate Micro-Training
-              </button>
-              <button id="content-assets-btn" class="secondary-btn">
-                Generate Content Assets
-              </button>
-            </div>
-
+        
+            <label for="training-topic">Training topic</label>
+            <select id="training-topic">
+              <option value="phishing_basics">
+                How to identify a phishing email
+              </option>
+              <option value="strong_passwords">
+                Creating and managing strong passwords
+              </option>
+              <option value="ai_privacy">
+                Data privacy when using AI assistants
+              </option>
+              <option value="public_wifi">
+                Safe use of public Wi-Fi networks
+              </option>
+            </select>
+        
+            <button id="micro-training-btn" class="primary-btn" style="margin-left: 12px;">
+              Generate Micro-Training Module
+            </button>
+        
             <div id="micro-training-output" class="mt-output"></div>
-            <div id="content-assets-output" class="mt-output"></div>
           </div>
         </section>
+        
       </main>
     </div>
 

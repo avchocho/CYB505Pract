@@ -445,9 +445,6 @@ async function showRiskSummary() {
       riskWeaknesses.appendChild(li);
     });
 
-    riskStartingDifficulty.textContent = `Recommended starting difficulty in Mode B: ${
-      data.recommendedStartingDifficulty || "easy"
-    }.`;
   } catch (err) {
     console.error(err);
     riskLevelText.textContent =
@@ -506,7 +503,7 @@ function renderCurrentEmail() {
 
 // Start a 5-email simulation
 generateEmailsBtn.addEventListener("click", async () => {
-  emailsContainer.innerHTML = "Generating emails with AI...";
+  emailsContainer.innerHTML = "Generating emails...";
   classificationResults.innerHTML = "";
   classifyEmailsBtn.classList.add("hidden");
   nextEmailBtn.classList.add("hidden");
@@ -584,7 +581,7 @@ classifyEmailsBtn.addEventListener("click", async () => {
       nextEmailBtn.classList.add("hidden");
       const doneMsg = document.createElement("p");
       doneMsg.style.marginTop = "8px";
-      doneMsg.textContent = "End of 5-email simulation.";
+      doneMsg.textContent = "End of email simulation.";
       classificationResults.appendChild(doneMsg);
     }
   } catch (err) {
@@ -606,113 +603,62 @@ nextEmailBtn.addEventListener("click", () => {
 
 
 //POLICY → TRAINING & CONTENT 
-
-const policyTextArea = document.getElementById("policy-text");
+const topicSelect = document.getElementById("training-topic");
 const microTrainingBtn = document.getElementById("micro-training-btn");
-const contentAssetsBtn = document.getElementById("content-assets-btn");
 const microTrainingOutput = document.getElementById("micro-training-output");
-const contentAssetsOutput = document.getElementById("content-assets-output");
 
-microTrainingBtn.addEventListener("click", async () => {
-  const policyText = policyTextArea.value.trim();
-  if (!policyText) {
-    alert("Please paste a short policy first.");
-    return;
-  }
+if (microTrainingBtn && topicSelect && microTrainingOutput) {
+  microTrainingBtn.addEventListener("click", async () => {
+    const topic = topicSelect.value.trim();
+    if (!topic) {
+      alert("Please choose a training topic first.");
+      return;
+    }
 
-  microTrainingOutput.innerHTML = "Generating micro-training script...";
-  try {
-    const res = await fetch(`${API_BASE}/api/micro-training`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ policyText }),
-    });
-    if (!res.ok) throw new Error("Failed micro-training");
-    const data = await res.json();
+    microTrainingOutput.innerHTML = "Generating micro-training module...";
 
-    microTrainingOutput.innerHTML = "";
-    const scriptDiv = document.createElement("div");
-    scriptDiv.className = "mt-section";
-    scriptDiv.innerHTML = `<h3>Micro-Training Script</h3><p>${data.script}</p>`;
-    microTrainingOutput.appendChild(scriptDiv);
+    try {
+      const res = await fetch(`${API_BASE}/api/micro-module`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ topic }),
+      });
 
-    const qDiv = document.createElement("div");
-    qDiv.className = "mt-section";
-    qDiv.innerHTML = "<h3>Quiz Questions</h3>";
-    const list = document.createElement("ol");
-    (data.questions || []).forEach((q) => {
-      const li = document.createElement("li");
-      li.innerHTML = `
-        <strong>${q.question}</strong>
-        <ul>
-          ${(q.options || [])
-            .map(
-              (opt, idx) => `<li>${String.fromCharCode(65 + idx)}. ${opt}</li>`
-            )
-            .join("")}
-        </ul>
+      if (!res.ok) throw new Error("Failed micro module");
+      const data = await res.json();
+
+      microTrainingOutput.innerHTML = "";
+
+      // Lesson card
+      const scriptDiv = document.createElement("div");
+      scriptDiv.className = "mt-section";
+      scriptDiv.innerHTML = `
+        <h3>${data.title || "Lesson"}</h3>
+        <p class="mt-overview">${data.overview || ""}</p>
+        <p class="mt-script">${(data.script || "").replace(/\n\n/g, "<br><br>")}</p>
       `;
-      list.appendChild(li);
-    });
-    qDiv.appendChild(list);
-    microTrainingOutput.appendChild(qDiv);
-  } catch (err) {
-    console.error(err);
-    microTrainingOutput.textContent =
-      "Error generating micro-training. Please check the server.";
-  }
-});
+      microTrainingOutput.appendChild(scriptDiv);
 
-contentAssetsBtn.addEventListener("click", async () => {
-  const policyText = policyTextArea.value.trim();
-  if (!policyText) {
-    alert("Please paste a short policy first.");
-    return;
-  }
+      // Key takeaways
+      if (Array.isArray(data.takeaways) && data.takeaways.length > 0) {
+        const tDiv = document.createElement("div");
+        tDiv.className = "mt-section";
+        tDiv.innerHTML = "<h3>Key Takeaways</h3>";
+        const ul = document.createElement("ul");
 
-  contentAssetsOutput.innerHTML = "Generating content assets...";
-  try {
-    const res = await fetch(`${API_BASE}/api/content-assets`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ policyText }),
-    });
-    if (!res.ok) throw new Error("Failed content assets");
-    const data = await res.json();
+        data.takeaways.forEach((line) => {
+          const li = document.createElement("li");
+          li.textContent = line;
+          ul.appendChild(li);
+        });
 
-    contentAssetsOutput.innerHTML = "";
-
-    const infoDiv = document.createElement("div");
-    infoDiv.className = "mt-section";
-    infoDiv.innerHTML = "<h3>Infographic Bullets</h3>";
-    const ul = document.createElement("ul");
-    (data.infographicBullets || []).forEach((b) => {
-      const li = document.createElement("li");
-      li.textContent = b;
-      ul.appendChild(li);
-    });
-    infoDiv.appendChild(ul);
-    contentAssetsOutput.appendChild(infoDiv);
-
-    const vidDiv = document.createElement("div");
-    vidDiv.className = "mt-section";
-    vidDiv.innerHTML = `<h3>Video Script</h3><p>${data.videoScript}</p>`;
-    contentAssetsOutput.appendChild(vidDiv);
-
-    const audioDiv = document.createElement("div");
-    audioDiv.className = "mt-section";
-    audioDiv.innerHTML = "<h3>Audio Jingle Ideas</h3>";
-    const audioUl = document.createElement("ul");
-    (data.audioJingle || []).forEach((line) => {
-      const li = document.createElement("li");
-      li.textContent = line;
-      audioUl.appendChild(li);
-    });
-    audioDiv.appendChild(audioUl);
-    contentAssetsOutput.appendChild(audioDiv);
-  } catch (err) {
-    console.error(err);
-    contentAssetsOutput.textContent =
-      "Error generating assets. Please check the server.";
-  }
-});
+        tDiv.appendChild(ul);
+        microTrainingOutput.appendChild(tDiv);
+      }
+    } catch (err) {
+      console.error(err);
+      microTrainingOutput.textContent =
+        "Error generating micro-training. Please check the server.";
+    }
+  });
+}

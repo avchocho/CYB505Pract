@@ -14,14 +14,43 @@ app.use(express.json());
 // GEMINI SETUP 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 // Match what you saw in AI Studio:
-const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+
+// ------------------------------
+// Helper: retry wrapper for Gemini
+// ------------------------------
+async function callGeminiWithRetry(prompt, retries = 3, delayMs = 1000) {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const result = await model.generateContent(prompt);
+      return result;
+    } catch (err) {
+      const is503 =
+        err && (err.status === 503 || err.statusText === "Service Unavailable");
+
+      // If it's not a 503 OR we're out of retries, rethrow
+      if (!is503 || attempt === retries) {
+        throw err;
+      }
+
+      console.warn(
+        `Gemini 503 (overloaded). Retrying in ${delayMs}ms... (attempt ${
+          attempt + 1
+        }/${retries})`
+      );
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+      delayMs *= 2; // exponential backoff
+    }
+  }
+}
 
 // Helper: clean ```json ... ``` wrappers and parse JSON
 function parseModelJSON(text) {
   let cleaned = text.trim();
 
   if (cleaned.startsWith("```")) {
-    cleaned = cleaned.replace(/```json/i, "")
+    cleaned = cleaned
+      .replace(/```json/i, "")
       .replace(/```javascript/i, "")
       .replace(/```/g, "")
       .trim();
@@ -80,7 +109,7 @@ app.post("/api/question", async (req, res) => {
     const { difficulty = "easy" } = req.body;
     const prompt = buildAdaptivePrompt(difficulty);
 
-    const result = await model.generateContent(prompt);
+    const result = await callGeminiWithRetry(prompt);
     const text = result.response.text();
     const data = parseModelJSON(text);
 
@@ -90,12 +119,24 @@ app.post("/api/question", async (req, res) => {
       !Array.isArray(data.options) ||
       data.options.length !== 4
     ) {
-      return res.status(500).json({ error: "Incomplete question from model" });
+      return res
+        .status(500)
+        .json({ error: "Incomplete question from model" });
     }
 
     res.json(data);
   } catch (err) {
     console.error("Error generating adaptive question:", err);
+
+    const is503 =
+      err && (err.status === 503 || err.statusText === "Service Unavailable");
+
+    if (is503) {
+      return res
+        .status(503)
+        .json({ error: "AI model overloaded, please try again." });
+    }
+
     res.status(500).json({ error: "Failed to generate question" });
   }
 });
@@ -132,12 +173,22 @@ Return JSON ONLY with:
 
 Make it short and workplace-relevant. No real names.`;
 
-    const result = await model.generateContent(prompt);
+    const result = await callGeminiWithRetry(prompt);
     const text = result.response.text();
     const data = parseModelJSON(text);
     res.json(data);
   } catch (err) {
     console.error("Error generating risk question:", err);
+
+    const is503 =
+      err && (err.status === 503 || err.statusText === "Service Unavailable");
+
+    if (is503) {
+      return res
+        .status(503)
+        .json({ error: "AI model overloaded, please try again." });
+    }
+
     res.status(500).json({ error: "Failed to generate risk question" });
   }
 });
@@ -165,17 +216,27 @@ Based on this, output JSON ONLY with:
   "level": "Beginner" | "Intermediate" | "Advanced",
   "strengths": [ "short bullet", ... ],
   "weaknesses": [ "short bullet", ... ],
-  "recommendedStartingDifficulty": "easy" | "medium" | "hard"
+  "suggestedTopics": [ "phishing basics", "password hygiene" ]
 }
 
 Keep bullets short and concrete. JSON only.`;
 
-    const result = await model.generateContent(prompt);
+    const result = await callGeminiWithRetry(prompt);
     const text = result.response.text();
     const data = parseModelJSON(text);
     res.json(data);
   } catch (err) {
     console.error("Error generating risk summary:", err);
+
+    const is503 =
+      err && (err.status === 503 || err.statusText === "Service Unavailable");
+
+    if (is503) {
+      return res
+        .status(503)
+        .json({ error: "AI model overloaded, please try again." });
+    }
+
     res.status(500).json({ error: "Failed to generate risk summary" });
   }
 });
@@ -212,12 +273,22 @@ Return JSON ONLY:
 Do NOT say which ones are phishing vs legitimate. No real companies; use
 fictional names. JSON only.`;
 
-    const result = await model.generateContent(prompt);
+    const result = await callGeminiWithRetry(prompt);
     const text = result.response.text();
     const data = parseModelJSON(text);
     res.json(data);
   } catch (err) {
     console.error("Error generating phishing emails:", err);
+
+    const is503 =
+      err && (err.status === 503 || err.statusText === "Service Unavailable");
+
+    if (is503) {
+      return res
+        .status(503)
+        .json({ error: "AI model overloaded, please try again." });
+    }
+
     res.status(500).json({ error: "Failed to generate emails" });
   }
 });
@@ -250,96 +321,90 @@ Return JSON ONLY:
 
 Be specific about social engineering / red flags. JSON only.`;
 
-    const result = await model.generateContent(prompt);
+    const result = await callGeminiWithRetry(prompt);
     const text = result.response.text();
     const data = parseModelJSON(text);
     res.json(data);
   } catch (err) {
     console.error("Error classifying emails:", err);
+
+    const is503 =
+      err && (err.status === 503 || err.statusText === "Service Unavailable");
+
+    if (is503) {
+      return res
+        .status(503)
+        .json({ error: "AI model overloaded, please try again." });
+    }
+
     res.status(500).json({ error: "Failed to classify emails" });
   }
 });
 
 //  POLICY → TRAINING 
-
-// D1: Micro-training + quiz from policy text
-app.post("/api/micro-training", async (req, res) => {
+app.post("/api/micro-module", async (req, res) => {
   try {
-    const { policyText } = req.body;
+    const { topic = "phishing_basics" } = req.body;
+
+    const topicLabels = {
+      phishing_basics: "Identifying phishing emails",
+      strong_passwords: "Creating and managing strong passwords",
+      mfa_security: "Using multi-factor authentication safely",
+      public_wifi: "Staying safe on public Wi-Fi",
+      ai_privacy: "Data privacy when using AI assistants",
+    };
+
+    const humanTopic = topicLabels[topic] || topicLabels.phishing_basics;
 
     const prompt = `
-Mode D1: Micro-Training from Policy
+Mode D: Micro-Training Module
 
-Here is a short email/security policy:
+You are creating a SHORT security awareness micro-training.
 
-"""${policyText}"""
+Topic key: ${topic}
+Human-readable topic: ${humanTopic}
 
-Turn this into JSON ONLY:
+Return JSON ONLY with this structure:
 
 {
-  "script": "60-second micro-training script a trainer could read aloud.",
-  "questions": [
-    {
-      "question": "string",
-      "options": ["A","B","C","D"],
-      "correctIndex": 0-3
-    },
-    ...
+  "title": "short catchy title for the module",
+  "overview": "1-2 sentence overview (max 35 words)",
+  "script": "Micro-lesson, 4–6 short sentences, max 150 words total.",
+  "takeaways": [
+    "1-line key takeaway",
+    "another 1-line key takeaway",
+    "third 1-line key takeaway"
   ]
 }
 
-Use simple language and concrete examples. 2-3 quiz questions. JSON only.`;
+Guidelines:
+- Keep language simple, concrete, and workplace-focused.
+- Make the script easy to read out loud in under 60 seconds.
+- Avoid real company names; use generic ones like "ACME Corp".
+- Keep everything as short as possible. Respond with JSON only, no extra commentary.
+`;
 
-    const result = await model.generateContent(prompt);
+    const result = await callGeminiWithRetry(prompt);
     const text = result.response.text();
     const data = parseModelJSON(text);
     res.json(data);
   } catch (err) {
-    console.error("Error generating micro-training:", err);
-    res.status(500).json({ error: "Failed to generate micro-training" });
-  }
-});
+    console.error("Error generating micro module:", err);
 
-// D2: Content assets (infographic bullets, video script, audio jingle)
-app.post("/api/content-assets", async (req, res) => {
-  try {
-    const { policyText } = req.body;
+    const is503 =
+      err && (err.status === 503 || err.statusText === "Service Unavailable");
 
-    const prompt = `
-Mode D2: Content Assets
+    if (is503) {
+      return res
+        .status(503)
+        .json({ error: "AI model overloaded, please try again." });
+    }
 
-Based on this short policy:
-
-"""${policyText}"""
-
-Return JSON ONLY:
-
-{
-  "infographicBullets": [
-    "How to spot phishing: ...",
-    ...
-  ],
-  "videoScript": "45-60 second script for an animated explainer.",
-  "audioJingle": [
-    "short rhyming line 1",
-    "short rhyming line 2"
-  ]
-}
-
-Keep bullets ≤ 10 words. Make everything generic so it fits any company.`;
-
-    const result = await model.generateContent(prompt);
-    const text = result.response.text();
-    const data = parseModelJSON(text);
-    res.json(data);
-  } catch (err) {
-    console.error("Error generating content assets:", err);
-    res.status(500).json({ error: "Failed to generate content assets" });
+    res.status(500).json({ error: "Failed to generate micro module" });
   }
 });
 
 //START SERVER 
-
 app.listen(port, () => {
   console.log(`Gemini backend listening on http://localhost:${port}`);
 });
