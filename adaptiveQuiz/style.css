@@ -155,7 +155,7 @@ ul {
 
 .score {
   display: flex;
-  gap: 16px;
+  gap: 5px;
   font-size: 0.9rem;
 }
 

@@ -53,7 +53,7 @@
             <div id="risk-intro" class="card">
               <h1>Risk Profile & Level Setting</h1>
               <p>
-                This mode asks 5 questions (2 easy, 2 medium, 1 hard) to estimate
+                This mode asks 5 questions to estimate
                 a user's baseline security awareness level.
               </p>
               <button id="risk-start-btn" class="primary-btn">
@@ -66,11 +66,16 @@
                 <div>
                   <h2>Risk Question <span id="risk-q-number">1</span> / 5</h2>
                   <div class="pill">
-                    Difficulty:
-                    <span id="risk-difficulty-label">Easy</span>
+                    Difficulty:&nbsp;<span id="risk-difficulty-label">Easy</span>
                   </div>
                 </div>
+              
+                <div class="score">
+                  Correct: <span id="risk-correct-count">0</span>
+                  Incorrect: <span id="risk-incorrect-count">0</span>
+                </div>
               </header>
+              
 
               <p id="risk-question-text" class="question-text"></p>
               <div id="risk-answer-buttons" class="answers"></div>
@@ -125,15 +130,15 @@
               <div>
                 <h2>Question <span id="question-number">1</span> / 10</h2>
                 <div class="pill">
-                  Difficulty:
-                  <span id="difficulty-label">Easy</span>
+                  Difficulty:&nbsp;<span id="difficulty-label">Easy</span>
                 </div>
               </div>
               <div class="score">
-                Correct: <span id="correct-count">0</span>  Incorrect:
-                <span id="incorrect-count">0</span>
+                Correct:<span id="correct-count">0</span>
+                Incorrect:<span id="incorrect-count">0</span>
               </div>
             </header>
+            
 
             <p id="question-text" class="question-text"></p>
             <div id="answer-buttons" class="answers"></div>

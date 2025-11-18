@@ -141,7 +141,7 @@ app.post("/api/question", async (req, res) => {
 
 //  RISK PROFILE 
 
-// A1: generate each of the 5 questions (2 easy, 2 medium, 1 hard overall)
+// A1: generate each of the 5 questions
 app.post("/api/risk-question", async (req, res) => {
   try {
     const { index = 1 } = req.body; // 1..5
@@ -355,38 +355,40 @@ app.post("/api/micro-module", async (req, res) => {
     const humanTopic = topicLabels[topic] || topicLabels.phishing_basics;
 
     const prompt = `
-Mode D: Micro-Training Module
+    Mode D: Micro-Training Module
 
-You are creating a SHORT security awareness micro-training.
+    You are creating a SHORT security awareness micro-training.
 
-Topic key: ${topic}
-Human-readable topic: ${humanTopic}
+    Topic key: ${topic}
+    Human-readable topic: ${humanTopic}
 
-Return JSON ONLY with this structure:
+    Return JSON ONLY with this structure:
 
-{
-  "title": "short catchy title for the module",
-  "overview": "2–3 sentence overview (max 60 words, single paragraph)",
-  "paragraphs": [
-    "Paragraph 1: 3–5 short sentences.",
-    "Paragraph 2: 3–5 short sentences.",
-    "Optional paragraph 3: 3–5 short sentences."
-  ],
-  "takeaways": [
-    "1-line key takeaway",
-    "another 1-line key takeaway",
-    "third 1-line key takeaway"
-  ]
-}
+    {
+      "title": "short catchy title for the module",
+      "overview": "2–3 sentence overview (max 60 words, single paragraph)",
+      "paragraphs": [
+        "Paragraph 1: 3–5 short sentences.",
+        "Paragraph 2: 3–5 short sentences.",
+        "Optional paragraph 3: 3–5 short sentences."
+      ],
+      "takeaways": [
+        "1-line key takeaway",
+        "another 1-line key takeaway",
+        "third 1-line key takeaway"
+      ],
+      "complianceReminder": "ONE sentence reminding employees that this behavior is required by company policy and compliance expectations."
+    }
 
-STRICT RULES:
-- Each paragraph MUST be a separate string in the "paragraphs" array.
-- Do NOT put newline characters (\\n) inside any string.
-- Keep language simple, concrete, and workplace-focused.
-- Total length across all paragraphs about 180–220 words.
-- Avoid real company names; use generic ones like "ACME Corp".
-- Respond with JSON only, no extra commentary.
-`;
+    STRICT RULES:
+    - Each paragraph MUST be a separate string in the "paragraphs" array.
+    - Do NOT put newline characters (\\n) inside any string.
+    - Total length across all paragraphs ≈ 180–220 words.
+    - Keep language simple, concrete, and workplace-focused.
+    - Do NOT mention ANY company names, especially ACME Corp. Use phrases like "company policy" or "your security team."
+    - Respond with JSON only, no extra commentary.
+    `;
+
 
 
     const result = await callGeminiWithRetry(prompt);

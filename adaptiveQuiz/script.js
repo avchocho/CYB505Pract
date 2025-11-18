@@ -303,6 +303,8 @@ restartBtn.addEventListener("click", () => {
 let riskIndex = 0; // 0..4 (we'll show as +1)
 let riskAnswers = [];
 let currentRiskQuestion = null;
+let riskCorrect = 0;
+let riskIncorrect = 0;
 
 const riskIntro = document.getElementById("risk-intro");
 const riskQuiz = document.getElementById("risk-quiz");
@@ -343,9 +345,18 @@ async function fetchRiskQuestion(index) {
 function startRiskProfile() {
   riskIndex = 0;
   riskAnswers = [];
+  riskCorrect = 0;
+  riskIncorrect = 0;
+
+  const riskCorrectSpan = document.getElementById("risk-correct-count");
+  const riskIncorrectSpan = document.getElementById("risk-incorrect-count");
+  if (riskCorrectSpan) riskCorrectSpan.textContent = "0";
+  if (riskIncorrectSpan) riskIncorrectSpan.textContent = "0";
+
   riskIntro.classList.add("hidden");
   riskSummary.classList.add("hidden");
   riskQuiz.classList.remove("hidden");
+
   loadNextRiskQuestion();
 }
 
@@ -397,10 +408,21 @@ function handleRiskAnswer(selectedIndex) {
     correct: isCorrect,
   });
 
+  // update score counters
+  if (isCorrect) {
+    riskCorrect++;
+  } else {
+    riskIncorrect++;
+  }
+
+  const riskCorrectSpan = document.getElementById("risk-correct-count");
+  const riskIncorrectSpan = document.getElementById("risk-incorrect-count");
+  if (riskCorrectSpan) riskCorrectSpan.textContent = String(riskCorrect);
+  if (riskIncorrectSpan) riskIncorrectSpan.textContent = String(riskIncorrect);
+
   riskFeedbackResult.textContent = isCorrect ? "Correct" : "Incorrect";
   riskFeedbackExplanation.textContent = currentRiskQuestion.explanation || "";
 
- 
   if (isCorrect) {
     riskFeedback.classList.remove("incorrect"); // green (default .feedback)
   } else {
@@ -444,7 +466,6 @@ async function showRiskSummary() {
       li.textContent = w;
       riskWeaknesses.appendChild(li);
     });
-
   } catch (err) {
     console.error(err);
     riskLevelText.textContent =
@@ -457,6 +478,13 @@ riskNextBtn.addEventListener("click", () => loadNextRiskQuestion());
 riskRestartBtn.addEventListener("click", () => {
   riskIntro.classList.remove("hidden");
   riskSummary.classList.add("hidden");
+
+  riskCorrect = 0;
+  riskIncorrect = 0;
+  const riskCorrectSpan = document.getElementById("risk-correct-count");
+  const riskIncorrectSpan = document.getElementById("risk-incorrect-count");
+  if (riskCorrectSpan) riskCorrectSpan.textContent = "0";
+  if (riskIncorrectSpan) riskIncorrectSpan.textContent = "0";
 });
 
 // PHISHING LAB 
@@ -601,8 +629,7 @@ nextEmailBtn.addEventListener("click", () => {
   }
 });
 
-
-//POLICY → TRAINING & CONTENT 
+// POLICY → TRAINING & CONTENT 
 const microTrainingOutput = document.getElementById("micro-training-output");
 const mtPrev = document.getElementById("mt-prev");
 const mtNext = document.getElementById("mt-next");
@@ -700,7 +727,6 @@ if (mtStart && microTrainingOutput) {
         ${parasHTML}
       `;
       microTrainingOutput.appendChild(scriptDiv);
-
 
       // Key takeaways
       if (Array.isArray(data.takeaways) && data.takeaways.length > 0) {
