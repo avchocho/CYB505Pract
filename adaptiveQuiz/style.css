@@ -179,6 +179,14 @@ ul {
   font-size: 0.95rem;
 }
 
+.answer-btn.correct {
+  background-color: #6FBF8C;
+  color: #ffffff;
+  border-color: #6FBF8C;
+}
+
+
+
 .answer-btn:hover {
   background: #eef2ff;
 }

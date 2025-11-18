@@ -67,40 +67,65 @@ function parseModelJSON(text) {
 
 function buildAdaptivePrompt(difficulty) {
   return `
-You are an AI security awareness trainer. Generate ONE multiple-choice quiz
-question in JSON format.
+You are an enterprise security awareness trainer. Generate ONE multiple-choice
+question in JSON format for an employee security-awareness quiz.
 
-The question is for an employee security-awareness quiz. Difficulty:
-${difficulty}.
+The overall difficulty for this question is: ${difficulty}.
 
-Allowed topics:
-- phishing and spear-phishing
-- suspicious links/attachments
-- MFA and login security
-- password hygiene
-- basic social engineering
-
-Return JSON ONLY, with this schema:
+Follow this JSON schema exactly:
 
 {
   "topic": "phishing" | "mfa" | "passwords" | "social",
   "difficulty": "easy" | "medium" | "hard",
   "question": "string",
-  "options": ["A", "B", "C", "D"],
-  "correctIndex": 0-3,
+  "options": ["string", "string", "string", "string"],
+  "correctIndex": 0 | 1 | 2 | 3,
   "explanation": "2-3 sentence explanation of the correct answer",
   "tip": "1 short, actionable micro-tip for employees"
 }
 
-Rules:
-- For EASY: obvious red flags, basic concepts.
-- For MEDIUM: realistic but still clear phishing or policy scenarios.
-- For HARD: subtle spear-phishing or tricky social engineering.
-- Do NOT use real company/person names. Use generic names like "ACME Corp".
-- Exactly 4 options, only one correct.
-- Respond with JSON only, no extra text.
+1) Topic selection
+Randomly choose ONE of these conceptual areas and map it to the "topic" field:
+
+- Email phishing, spear-phishing, smishing (SMS scams), vishing (phone scams),
+  suspicious links or attachments  ->  topic "phishing"
+
+- MFA prompts, MFA fatigue / push bombing, suspicious login alerts or new-device
+  sign-ins                                  ->  topic "mfa"
+
+- Weak passwords, password reuse, sharing passwords, writing them on paper,
+  using password managers                   ->  topic "passwords"
+
+- Social engineering, CEO fraud / business email compromise, urgent payment
+  requests, data leakage / oversharing, public Wi-Fi risks, USB drop attacks,
+  tailgating / badge sharing                ->  topic "social"
+
+Use different channels (email, phone call, SMS, chat message, in-person, public
+Wi-Fi, removable media, etc.). Do NOT generate the same style of phishing email
+every time.
+
+2) Question style
+- Present a short, realistic workplace scenario.
+- Exactly four distinct answer options.
+- Only ONE option is correct.
+- Vary which index is correct (not always 0).
+- Avoid always using "Report to IT" or "Forward to security" as the correct
+  answer. Sometimes the best action is to delete, verify via another channel,
+  refuse the request, change a password, lock an account, turn off Wi-Fi, etc.
+
+3) Difficulty guidance
+- "easy": obvious red flags and basic best practices, simple wording.
+- "medium": more subtle situations; the user must notice 1–2 clues.
+- "hard": sophisticated or very realistic scenarios (spear-phishing, mixed
+  signals, multi-step reasoning).
+
+4) Output rules
+- Use only generic organization names such as "your company".
+- Do NOT mention any real companies or people.
+- Respond with JSON only. No backticks, no markdown, no extra commentary.
 `;
 }
+
 
 app.post("/api/question", async (req, res) => {
   try {
@@ -154,22 +179,42 @@ app.post("/api/risk-question", async (req, res) => {
     const prompt = `
 Mode A: Risk Profile Question
 
-Generate ONE multiple-choice question to estimate a user's security awareness.
+Generate ONE workplace-relevant security awareness question.
 
-Difficulty for this question: ${difficulty}
+Difficulty: ${difficulty}
 
-Return JSON ONLY with:
+The question MUST be about one of these topics:
+- phishing (only sometimes)
+- multi-factor authentication (MFA)
+- password security
+- social engineering (tailgating, pretexting, impersonation)
+- safe data handling
+- device security (locking workstation, USB drives)
+- physical security (badge access, strangers entering office)
+
+STRICT DIVERSITY RULE:
+Do NOT repeat similar "verify link" or "contact IT" answers across questions.
+Avoid repeating the same scenario structure (like clicking links).
+
+Each question must feel different from previous patterns:
+- INCLUDE login prompts, MFA fatigue, password reuse, shoulder surfing,
+  suspicious phone calls, tailgating, USB drive etiquette, etc.
+
+Return JSON ONLY:
 
 {
-  "topic": "phishing" | "mfa" | "passwords" | "social",
+  "topic": "phishing" | "mfa" | "passwords" | "social" | "device" | "data",
   "difficulty": "${difficulty}",
   "question": "string",
   "options": ["A", "B", "C", "D"],
   "correctIndex": 0-3,
-  "explanation": "2-3 sentence explanation of the answer"
+  "explanation": "2-3 sentences explaining the best practice"
 }
 
-Make it short and workplace-relevant. No real names.`;
+Do NOT use real company names.
+Make the correct answer DIFFERENT from previous ones (not always “contact IT”).
+Make the scenario realistic and varied. JSON only.`;
+
 
     const result = await callGeminiWithRetry(prompt);
     const text = result.response.text();

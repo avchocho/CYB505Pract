@@ -202,10 +202,16 @@ function handleAdaptiveAnswer(selectedIndex) {
   feedbackTip.textContent = "Tip: " + (currentQuestion.tip || "");
   feedbackPanel.classList.remove("hidden");
 
-  Array.from(answerButtonsContainer.children).forEach((btn) => {
+  Array.from(answerButtonsContainer.children).forEach((btn, idx) => {
     btn.disabled = true;
+  
+    // Highlight only the correct answer
+    if (idx === currentQuestion.correctIndex) {
+      btn.classList.add("correct");
+    }
   });
-
+  
+  
   adjustAdaptiveDifficulty(isCorrect);
 }
 
@@ -431,12 +437,19 @@ function handleRiskAnswer(selectedIndex) {
 
   riskFeedback.classList.remove("hidden");
 
-  Array.from(riskAnswerButtons.children).forEach((btn) => {
+  Array.from(riskAnswerButtons.children).forEach((btn, idx) => {
     btn.disabled = true;
+  
+    // Highlight only the correct answer
+    if (idx === currentRiskQuestion.correctIndex) {
+      btn.classList.add("correct");
+    }
   });
-
+  
+  
   riskNextBtn.classList.remove("hidden");
   riskIndex++;
+  
 }
 
 async function showRiskSummary() {
