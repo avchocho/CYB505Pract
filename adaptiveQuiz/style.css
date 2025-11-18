@@ -1,190 +1,294 @@
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-      sans-serif;
-  }
-  
-  body {
-    background: #e5ecf7;
-    color: #101828;
-  }
-  
-  .app-shell {
-    display: flex;
-    min-height: 100vh;
-  }
-  
-  /* Sidebar */
-  
-  .sidebar {
-    width: 260px;
-    background: #0f172a;
-    color: #e5ecf7;
-    padding: 24px 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-  
-  .logo {
-    font-size: 1.4rem;
-    margin-bottom: 24px;
-  }
-  
-  .nav-btn {
-    width: 100%;
-    text-align: left;
-    border: none;
-    padding: 10px 12px;
-    border-radius: 8px;
-    background: transparent;
-    color: #cbd5f5;
-    margin-bottom: 6px;
-    cursor: pointer;
-  }
-  
-  .nav-btn.active,
-  .nav-btn:hover {
-    background: #1d283a;
-  }
-  
-  .sidebar-footer {
-    font-size: 0.78rem;
-    opacity: 0.8;
-  }
-  
-  /* Main panel */
-  
-  .main-panel {
-    flex: 1;
-    padding: 32px 40px;
-  }
-  
-  .hidden {
-    display: none;
-  }
-  
-  h2 {
-    margin-bottom: 12px;
-  }
-  
-  ul {
-    margin-left: 18px;
-    margin-bottom: 16px;
-  }
-  
-  .primary-btn,
-  .secondary-btn {
-    border: none;
-    border-radius: 999px;
-    padding: 10px 20px;
-    cursor: pointer;
-    font-size: 0.95rem;
-    margin-top: 18px;
-  }
-  
-  .primary-btn {
-    background: #2563eb;
-    color: white;
-  }
-  
-  .primary-btn:hover {
-    background: #1d4ed8;
-  }
-  
-  .secondary-btn {
-    background: #e0e7ff;
-    color: #111827;
-  }
-  
-  .secondary-btn:hover {
-    background: #c7d2fe;
-  }
-  
-  /* Quiz */
-  
-  .quiz-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 18px;
-  }
-  
-  .difficulty-pill {
-    font-size: 0.85rem;
-    margin-top: 4px;
-    color: #475569;
-  }
-  
-  .score-box {
-    display: flex;
-    gap: 16px;
-    font-size: 0.9rem;
-  }
-  
-  .question-card {
-    background: white;
-    padding: 20px 22px;
-    border-radius: 14px;
-    box-shadow: 0 14px 30px rgba(15, 23, 42, 0.14);
-    margin-bottom: 16px;
-  }
-  
-  .answers {
-    margin-top: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  
-  .answer-btn {
-    border-radius: 10px;
-    border: 1px solid #cbd5f5;
-    padding: 10px 12px;
-    background: #f9fafb;
-    cursor: pointer;
-    text-align: left;
-    font-size: 0.95rem;
-  }
-  
-  .answer-btn:hover {
-    background: #eef2ff;
-  }
-  
-  .feedback {
-    background: #ecfdf3;
-    border-radius: 12px;
-    padding: 14px 16px;
-    border-left: 4px solid #16a34a;
-    font-size: 0.9rem;
-  }
-  
-  .feedback.incorrect {
-    background: #fef3f2;
-    border-left-color: #dc2626;
-  }
-  
-  .feedback p + p {
-    margin-top: 6px;
-  }
-  
-  .tip {
-    font-style: italic;
-  }
-  
-  .summary-grid {
-    display: flex;
-    gap: 32px;
-    margin: 16px 0 20px;
-  }
-  
-  .summary-grid h3 {
-    margin-bottom: 8px;
-  }
-  
-  .summary-grid ul {
-    margin-bottom: 0;
-  }
-  
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+body {
+  background: #e5ecf6;
+  color: #101828;
+}
+
+/* ---------- APP LAYOUT ---------- */
+
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Sidebar */
+
+.sidebar {
+  width: 230px;
+  background: #0e1726;
+  color: #f5f5f5;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 20px;
+  margin-bottom: 24px;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nav-btn {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #c7d2fe;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.nav-btn.active,
+.nav-btn:hover {
+  background: #111827;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+/* Main panel */
+
+.main {
+  flex: 1;
+  padding: 32px;
+}
+
+.card {
+  background: #f9fafb;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 12px 35px rgba(15, 23, 42, 0.12);
+  max-width: 860px;
+}
+
+.hidden {
+  display: none;
+}
+
+/* ---------- TYPOGRAPHY ---------- */
+
+h1 {
+  margin-bottom: 12px;
+}
+
+h2 {
+  margin-bottom: 12px;
+}
+
+h3 {
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+ul {
+  margin-left: 18px;
+  margin-bottom: 16px;
+}
+
+/* ---------- BUTTONS ---------- */
+
+.primary-btn,
+.secondary-btn {
+  border-radius: 999px;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 16px;
+}
+
+.primary-btn {
+  background: #2563eb;
+  color: white;
+}
+
+.primary-btn:hover {
+  background: #1d4ed8;
+}
+
+.secondary-btn {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.secondary-btn:hover {
+  background: #d4d4d8;
+}
+
+/* ---------- QUIZ LAYOUT ---------- */
+
+.quiz-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #e0f2fe;
+  color: #0369a1;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.score {
+  display: flex;
+  gap: 16px;
+  font-size: 0.9rem;
+}
+
+/* Answers */
+
+.answers {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.answer-btn {
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.answer-btn:hover {
+  background: #eef2ff;
+}
+
+.answer-btn:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+/* ---------- FEEDBACK BANNERS ---------- */
+/* default = GREEN (correct), .incorrect = RED (incorrect) */
+
+.feedback {
+  background: #ecfdf3;             /* light green */
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-top: 8px;
+  font-size: 14px;
+  border-left: 4px solid #16a34a;  /* green border */
+}
+
+.feedback.incorrect {
+  background: #fef3f2;             /* light red */
+  border-left-color: #dc2626;      /* red border */
+}
+
+.feedback p + p {
+  margin-top: 6px;
+}
+
+.tip {
+  font-style: italic;
+}
+
+/* Summary */
+
+.summary-grid {
+  display: flex;
+  gap: 32px;
+  margin: 16px 0 20px;
+}
+
+.summary-grid ul {
+  margin-bottom: 0;
+}
+
+/* ---------- PHISHING LAB & POLICY OUTPUT ---------- */
+
+.emails-container,
+.classification-results,
+.mt-output {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.email-card {
+  background: white;
+  border-radius: 12px;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.email-card.phish {
+  border-color: #ef4444;
+}
+
+.email-card.legit {
+  border-color: #22c55e;
+}
+
+.email-header {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.email-meta {
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.email-body {
+  white-space: pre-wrap;
+  font-family: system-ui, sans-serif;
+  font-size: 13px;
+}
+
+.reasons {
+  margin-left: 18px;
+  margin-top: 4px;
+}
+
+.mt-section {
+  margin-top: 12px;
+}
+
+/* Policy textarea */
+
+textarea {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  padding: 8px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.button-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}

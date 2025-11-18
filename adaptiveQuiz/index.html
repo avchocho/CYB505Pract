@@ -1,94 +1,230 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Security Awareness – Adaptive Quiz Prototype</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <div class="app-shell">
-    <aside class="sidebar">
-      <h1 class="logo">SecAware AI</h1>
-      <nav>
-        <button class="nav-btn active">Adaptive Quiz</button>
-        <!-- later you can add:
-        <button class="nav-btn">Phishing Simulator</button>
-        <button class="nav-btn">Training Generator</button>
-        -->
-      </nav>
-      <div class="sidebar-footer">
-        <p class="note">
-          Prototype powered by Gemini<br />
-          (questions & explanations generated with AI).
-        </p>
-      </div>
-    </aside>
+  <head>
+    <meta charset="UTF-8" />
+    <title>SecAware AI – Security Awareness Assistant</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="logo">SecAware AI</div>
+        <nav class="nav">
+            <button class="nav-btn" data-mode="mode-a">Risk Profile</button>
+            <button class="nav-btn" data-mode="mode-b">Adaptive Quiz</button>
+            <button class="nav-btn" data-mode="mode-c">Phishing Lab</button>
+            <button class="nav-btn" data-mode="mode-d">Policy → Training</button>
+          </nav>
+          
+        <div class="sidebar-footer">
+          Powered by Gemini
+        </div>
+      </aside>
 
-    <main class="main-panel">
-      <section id="intro-screen">
-        <h2>Adaptive Security Awareness Quiz</h2>
-        <p>
-          This prototype adjusts question difficulty in real time based on
-          how you answer, similar to adaptive training platforms like Hoxhunt.
-        </p>
-        <ul>
-          <li>Topics: phishing, social engineering, MFA, passwords.</li>
-          <li>Starts easy, moves toward harder spear-phishing scenarios.</li>
-          <li>Gives instant feedback and micro-tips after each question.</li>
-        </ul>
-        <button id="start-btn" class="primary-btn">Start Quiz</button>
-      </section>
+      <main class="main">
+        <section id="welcome-screen" class="card">
+            <h1>Welcome to SecAware AI</h1>
+          
+            <p>This tool provides AI-powered security training using Google Gemini. It includes:</p>
+            
+            <ul>
+              <li><strong>Risk Profile</strong> — Estimate user awareness level</li>
+              <li><strong>Adaptive Quiz</strong> — Difficulty changes based on answers</li>
+              <li><strong>Phishing Lab</strong> — Generate & analyze phishing scenarios</li>
+              <li><strong>Policy → Training</strong> — Convert security policies into micro-training</li>
+            </ul>
+          
+            <button id="start-risk" class="primary-btn">Start With Risk Profile</button>
+          </section>
+          
 
-      <section id="quiz-screen" class="hidden">
-        <div class="quiz-header">
-          <div>
-            <h2>Question <span id="question-number">1</span> / 10</h2>
-            <p class="difficulty-pill">
-              Difficulty: <span id="difficulty-label">Easy</span>
+
+         
+        <!-- RISK PROFILE -->
+        <section id="mode-a" class="mode-section hidden">
+            <div id="risk-intro" class="card">
+              <h1>Risk Profile & Level Setting</h1>
+              <p>
+                This mode asks 5 questions (2 easy, 2 medium, 1 hard) to estimate
+                a user's baseline security awareness level.
+              </p>
+              <button id="risk-start-btn" class="primary-btn">
+                Start Risk Profile
+              </button>
+            </div>
+  
+            <div id="risk-quiz" class="card hidden">
+              <header class="quiz-header">
+                <div>
+                  <h2>Risk Question <span id="risk-q-number">1</span> / 5</h2>
+                  <div class="pill">
+                    Difficulty:
+                    <span id="risk-difficulty-label">Easy</span>
+                  </div>
+                </div>
+              </header>
+  
+              <p id="risk-question-text" class="question-text"></p>
+              <div id="risk-answer-buttons" class="answers"></div>
+  
+              <div id="risk-feedback" class="feedback hidden">
+                <h3 id="risk-feedback-result"></h3>
+                <p id="risk-feedback-explanation"></p>
+              </div>
+  
+              <button id="risk-next-btn" class="secondary-btn hidden">
+                Next
+              </button>
+            </div>
+  
+            <div id="risk-summary" class="card hidden">
+              <h2>Risk Profile Summary</h2>
+              <p id="risk-level-text"></p>
+  
+              <h3>Strengths</h3>
+              <ul id="risk-strengths"></ul>
+  
+              <h3>Weaknesses</h3>
+              <ul id="risk-weaknesses"></ul>
+  
+              <p id="risk-starting-difficulty"></p>
+  
+              <button id="risk-restart-btn" class="secondary-btn">
+                Run Again
+              </button>
+            </div>
+          </section>
+           
+        <!--  ADAPTIVE QUIZ -->
+        <section id="mode-b" class="mode-section hidden">
+          <div id="intro-screen" class="card">
+            <h1>Adaptive Security Awareness Quiz</h1>
+            <p>
+              This prototype adjusts question difficulty in real time based on
+              how you answer, similar to adaptive training platforms like
+              Hoxhunt.
             </p>
+            <ul>
+              <li>Topics: phishing, social engineering, MFA, passwords.</li>
+              <li>Starts easy, moves toward harder spear-phishing scenarios.</li>
+              <li>Gives instant feedback and micro-tips after each question.</li>
+            </ul>
+            <button id="start-btn" class="primary-btn">Start Quiz</button>
           </div>
-          <div class="score-box">
-            <span>Correct: <strong id="correct-count">0</strong></span>
-            <span>Incorrect: <strong id="incorrect-count">0</strong></span>
+
+          <div id="quiz-screen" class="card hidden">
+            <header class="quiz-header">
+              <div>
+                <h2>Question <span id="question-number">1</span> / 10</h2>
+                <div class="pill">
+                  Difficulty:
+                  <span id="difficulty-label">Easy</span>
+                </div>
+              </div>
+              <div class="score">
+                Correct: <span id="correct-count">0</span>  Incorrect:
+                <span id="incorrect-count">0</span>
+              </div>
+            </header>
+
+            <p id="question-text" class="question-text"></p>
+            <div id="answer-buttons" class="answers"></div>
+
+            <div id="feedback-panel" class="feedback hidden">
+              <h3 id="feedback-result"></h3>
+              <p id="feedback-explanation"></p>
+              <p id="feedback-tip" class="tip"></p>
+            </div>
+
+            <button id="next-btn" class="secondary-btn">
+              Next Question
+            </button>
           </div>
-        </div>
 
-        <div class="question-card">
-          <p id="question-text"></p>
-          <div id="answer-buttons" class="answers"></div>
-        </div>
+          <div id="summary-screen" class="card hidden">
+            <h2>Adaptive Quiz Summary</h2>
+            <p id="final-level"></p>
 
-        <div id="feedback-panel" class="feedback hidden">
-          <p id="feedback-result"></p>
-          <p id="feedback-explanation"></p>
-          <p id="feedback-tip" class="tip"></p>
-          <button id="next-btn" class="secondary-btn">Next Question</button>
-        </div>
-      </section>
-
-      <section id="summary-screen" class="hidden">
-        <h2>Your Training Summary</h2>
-        <p id="final-level"></p>
-
-        <div class="summary-grid">
-          <div>
             <h3>Strengths</h3>
             <ul id="strengths-list"></ul>
-          </div>
-          <div>
-            <h3>Risks / Weaknesses</h3>
+
+            <h3>Weaknesses / Risks</h3>
             <ul id="weaknesses-list"></ul>
+
+            <h3>Next Steps</h3>
+            <ul id="next-steps-list"></ul>
+
+            <button id="restart-btn" class="secondary-btn">Restart</button>
           </div>
-        </div>
+        </section>
 
-        <h3>Recommended Next Steps</h3>
-        <ul id="next-steps-list"></ul>
+        <!-- PHISHING LAB -->
+        <section id="mode-c" class="mode-section hidden">
+          <div class="card">
+            <h1>Phishing Simulator & Analyzer</h1>
+            <p>
+              This lab uses Gemini to generate simulated phishing and legitimate
+              emails, then classify and explain them one at a time.
+              Each simulation runs through 5 emails.
+            </p>
 
-        <button id="restart-btn" class="primary-btn">Restart Quiz</button>
-      </section>
-    </main>
-  </div>
+            <!-- Start a 5-email simulation -->
+            <button id="generate-emails-btn" class="primary-btn">
+              Start 5-Email Simulation
+            </button>
 
-  <script src="script.js"></script>
-</body>
+            <!-- Shows ONE email at a time -->
+            <div id="emails-container" class="emails-container"></div>
+
+            <!-- Actions for current email -->
+            <div class="button-row">
+              <button id="classify-emails-btn" class="secondary-btn hidden">
+                Classify This Email
+              </button>
+              <button id="next-email-btn" class="secondary-btn hidden">
+                Next Email
+              </button>
+            </div>
+
+            <!-- Verdict + reasons for current email -->
+            <div id="classification-results" class="classification-results"></div>
+          </div>
+        </section>
+
+
+        <!--  POLICY → TRAINING & CONTENT -->
+        <section id="mode-d" class="mode-section hidden">
+          <div class="card">
+            <h1>Micro-Training from Policy</h1>
+            <p>
+              Paste a short email/security policy and Gemini will generate a
+              60-second micro-training script plus quiz questions and content
+              assets.
+            </p>
+
+            <label for="policy-text">Policy Text</label>
+            <textarea
+              id="policy-text"
+              rows="6"
+              placeholder="Example: Employees must never click on links in unexpected emails. Instead, navigate directly to the company website..."
+            ></textarea>
+
+            <div class="button-row">
+              <button id="micro-training-btn" class="primary-btn">
+                Generate Micro-Training
+              </button>
+              <button id="content-assets-btn" class="secondary-btn">
+                Generate Content Assets
+              </button>
+            </div>
+
+            <div id="micro-training-output" class="mt-output"></div>
+            <div id="content-assets-output" class="mt-output"></div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="/script.js"></script>
+  </body>
 </html>
